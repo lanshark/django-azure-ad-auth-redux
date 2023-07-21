@@ -1,23 +1,14 @@
-from .backends import AzureActiveDirectoryBackend
-from django.conf import settings
-from django.contrib.auth import REDIRECT_FIELD_NAME, login
-from django import VERSION
-from django.http import HttpResponseRedirect
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.cache import never_cache
+from urllib.parse import urlparse
 import uuid
 
-if VERSION[0] < 2:
-    from django.core.urlresolvers import reverse
-else:
-    from django.urls import reverse
+from django.conf import settings
+from django.contrib.auth import REDIRECT_FIELD_NAME, login
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import csrf_exempt
 
-try:
-    # Python 3
-    from urllib.parse import urlparse
-except ImportError:
-    # Python 2
-    from urlparse import urlparse
+from .backends import AzureActiveDirectoryBackend
 
 
 @never_cache
@@ -25,9 +16,9 @@ def auth(request):
     backend = AzureActiveDirectoryBackend()
     redirect_uri = request.build_absolute_uri(reverse(complete))
     nonce = str(uuid.uuid4())
-    request.session['nonce'] = nonce
+    request.session["nonce"] = nonce
     state = str(uuid.uuid4())
-    request.session['state'] = state
+    request.session["state"] = state
     login_url = backend.login_url(
         redirect_uri=redirect_uri,
         nonce=nonce,
@@ -40,21 +31,21 @@ def auth(request):
 @csrf_exempt
 def complete(request):
     backend = AzureActiveDirectoryBackend()
-    method = 'GET' if backend.RESPONSE_MODE == 'fragment' else 'POST'
-    original_state = request.session.get('state')
-    state = getattr(request, method).get('state')
+    method = "GET" if backend.RESPONSE_MODE == "fragment" else "POST"
+    original_state = request.session.get("state")
+    state = getattr(request, method).get("state")
     if original_state == state:
-        token = getattr(request, method).get('id_token')
-        nonce = request.session.get('nonce')
+        token = getattr(request, method).get("id_token")
+        nonce = request.session.get("nonce")
         user = backend.authenticate(request=request, token=token, nonce=nonce)
         if user is not None:
             login(request, user)
             return HttpResponseRedirect(get_login_success_url(request))
-    return HttpResponseRedirect('failure')
+    return HttpResponseRedirect("failure")
 
 
 def get_login_success_url(request):
-    redirect_to = request.GET.get(REDIRECT_FIELD_NAME, '')
+    redirect_to = request.GET.get(REDIRECT_FIELD_NAME, "")
     netloc = urlparse(redirect_to)[1]
     if not redirect_to:
         redirect_to = settings.LOGIN_REDIRECT_URL

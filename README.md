@@ -1,19 +1,23 @@
-Django Azure AD Auth
-======================
+Django Azure AD Auth Redux
+==========================
 
 *Django Azure AD Auth* allows you to authenticate through Azure Active Directory.
+
+  This fork has the following additional features:
+  - Add the specification of the decode algorithm per newer PyJWT requirements.
+  - Supports django > 3.2.18
 
 Installation
 ------------
 
-Run `pip install django-azure-ad-auth`
+Run `pip install django-azure-ad-auth-redux`
 
 Add the `AzureActiveDirectoryBackend` to your `AUTHENTICATION_BACKENDS` setting:
 
 ```python
 AUTHENTICATION_BACKENDS = (
     ...
-    'azure_ad_auth.backends.AzureActiveDirectoryBackend',
+    "azure_ad_auth.backends.AzureActiveDirectoryBackend",
 )
 ```
 
@@ -28,25 +32,24 @@ The Azure Tenant ID. It can be found in the URL of the Azure Management Portal.
 
 The Azure Application Client ID.
 
-
 ### AAD_AUTHORITY
 
-**default:** `'https://login.microsoftonline.com'`
-The domain that is used for authorization, the federation metadata document, and loggin out.
+**default:** `"https://login.microsoftonline.com"`
+The domain that is used for authorization, the federation metadata document, and logging out.
 
 ### AAD_SCOPE
 
-**default:** `'openid'`
+**default:** `"openid"`
 OAuth scope parameter.
 
 ### AAD_RESPONSE_TYPE
 
-**default:** `'id_token'`
+**default:** `"id_token"`
 Tells OAuth to return a JWT token in its response.
 
 ### AAD_RESPONSE_MODE
 
-**default:** `'form_post'`
+**default:** `"form_post"`
 Defines how the response parameters are returned. Valid choices are `fragment` or `form_post`.
 
 ### AAD_USER_CREATION

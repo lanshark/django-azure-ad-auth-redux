@@ -4,4 +4,4 @@ from django.shortcuts import render
 
 @login_required
 def login_successful(request):
-    return render(request, 'login-successful.html')
+    return render(request, "login-successful.html")

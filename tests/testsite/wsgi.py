@@ -1,10 +1,7 @@
 """
-WSGI config for testsite project.
+WSGI config for azure_ad_auth testsite project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/1.8/howto/deployment/wsgi/
 """
 
 import os

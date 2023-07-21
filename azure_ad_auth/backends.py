@@ -1,23 +1,24 @@
-from .utils import get_token_payload, get_token_payload_email, get_login_url, get_logout_url, RESPONSE_MODE
 from base64 import urlsafe_b64encode
+
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.core.exceptions import ObjectDoesNotExist
-try:
-    from django.contrib.auth import get_user_model
-except ImportError:
-    from django.contrib.auth.models import User
-
-    def get_user_model(*args, **kwargs):
-        return User
+from django.contrib.auth import get_user_model
 from hashlib import sha1
 
+from .utils import (
+    get_login_url,
+    get_logout_url,
+    get_token_payload,
+    get_token_payload_email,
+    RESPONSE_MODE,
+)
 
 class AzureActiveDirectoryBackend(object):
-    USER_CREATION = getattr(settings, 'AAD_USER_CREATION', True)
-    USER_MAPPING = getattr(settings, 'AAD_USER_MAPPING', {})
-    USER_STATIC_MAPPING = getattr(settings, 'AAD_USER_STATIC_MAPPING', {})
-    GROUP_MAPPING = getattr(settings, 'AAD_GROUP_MAPPING', {})
+    USER_CREATION = getattr(settings, "AAD_USER_CREATION", True)
+    USER_MAPPING = getattr(settings, "AAD_USER_MAPPING", {})
+    USER_STATIC_MAPPING = getattr(settings, "AAD_USER_STATIC_MAPPING", {})
+    GROUP_MAPPING = getattr(settings, "AAD_GROUP_MAPPING", {})
     RESPONSE_MODE = RESPONSE_MODE
 
     supports_anonymous_user = False
@@ -49,7 +50,7 @@ class AzureActiveDirectoryBackend(object):
 
         email = email.lower()
 
-        new_user = {'email': email}
+        new_user = {"email": email}
 
         users = self.User.objects.filter(email=email)
         if len(users) == 0 and self.USER_CREATION:
@@ -65,7 +66,7 @@ class AzureActiveDirectoryBackend(object):
         else:
             return None
 
-        user.backend = '{}.{}'.format(self.__class__.__module__, self.__class__.__name__)
+        user.backend = f"{self.__class__.__module__}.{self.__class__.__name__}"
         return user
 
     def get_user(self, user_id):
@@ -76,8 +77,8 @@ class AzureActiveDirectoryBackend(object):
             return None
 
     def add_user_to_group(self, user, payload):
-        if user is not None and 'groups' in payload:
-            for groupid in payload['groups']:
+        if user is not None and "groups" in payload:
+            for groupid in payload["groups"]:
                 if groupid not in self.GROUP_MAPPING:
                     continue
                 group_name = self.GROUP_MAPPING[groupid]
@@ -88,10 +89,10 @@ class AzureActiveDirectoryBackend(object):
                     pass
 
     def create_user(self, user_kwargs, payload):
-        username_field = getattr(self.User, 'USERNAME_FIELD', 'username')
-        email = user_kwargs.get('email', None)
+        username_field = getattr(self.User, "USERNAME_FIELD", "username")
+        email = user_kwargs.get("email", None)
 
-        if username_field and username_field != 'email' and email:
+        if username_field and username_field != "email" and email:
             user_kwargs[username_field] = self.username_generator(email)
 
         for user_field, token_field in self.USER_MAPPING.items():
@@ -106,4 +107,4 @@ class AzureActiveDirectoryBackend(object):
 
     @staticmethod
     def username_generator(email):
-        return urlsafe_b64encode(sha1(email.encode('utf-8')).digest()).rstrip(b'=')
+        return urlsafe_b64encode(sha1(email.encode("utf-8")).digest()).rstrip(b"=")

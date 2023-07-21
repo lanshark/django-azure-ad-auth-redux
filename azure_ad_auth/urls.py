@@ -1,8 +1,8 @@
 from .views import auth, complete
-from django.conf.urls import url
+from django.urls import path
 
 
 urlpatterns = [
-    url(r'^login/$', auth, name='azure_login'),
-    url(r'^complete/$', complete, name='azure_complete'),
+    path("login/", auth, name="azure_login"),
+    path("complete/", complete, name="azure_complete"),
 ]
