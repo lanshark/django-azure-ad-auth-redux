@@ -1,20 +1,21 @@
 from base64 import urlsafe_b64encode
-
-from django.conf import settings
-from django.contrib.auth.models import Group
-from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.auth import get_user_model
 from hashlib import sha1
 
+from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
+from django.core.exceptions import ObjectDoesNotExist
+
 from .utils import (
+    RESPONSE_MODE,
     get_login_url,
     get_logout_url,
     get_token_payload,
     get_token_payload_email,
-    RESPONSE_MODE,
 )
 
-class AzureActiveDirectoryBackend(object):
+
+class AzureActiveDirectoryBackend:
     USER_CREATION = getattr(settings, "AAD_USER_CREATION", True)
     USER_MAPPING = getattr(settings, "AAD_USER_MAPPING", {})
     USER_STATIC_MAPPING = getattr(settings, "AAD_USER_STATIC_MAPPING", {})
@@ -32,13 +33,19 @@ class AzureActiveDirectoryBackend(object):
         return get_login_url(
             redirect_uri=redirect_uri,
             nonce=nonce,
-            state=state
+            state=state,
         )
 
-    def logout_url(redirect_uri):
+    def logout_url(self, redirect_uri):
         return get_logout_url(redirect_uri=redirect_uri)
 
-    def authenticate(self, request=None, token=None, nonce=None, **kwargs):
+    def authenticate(
+        self,
+        request=None,  # noqa: ARG002
+        token=None,
+        nonce=None,
+        **kwargs,
+    ):
         if token is None:
             return None
 
@@ -107,4 +114,10 @@ class AzureActiveDirectoryBackend(object):
 
     @staticmethod
     def username_generator(email):
-        return urlsafe_b64encode(sha1(email.encode("utf-8")).digest()).rstrip(b"=")
+        return urlsafe_b64encode(
+            sha1(  # noqa: S324
+                email.encode("utf-8"),
+            ).digest(),
+        ).rstrip(
+            b"=",
+        )

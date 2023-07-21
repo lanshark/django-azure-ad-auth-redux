@@ -1,39 +1,40 @@
 import os
-from setuptools import setup, find_packages
+
+from setuptools import find_packages, setup
 
 
 def read_file(filename):
     path = os.path.abspath(os.path.dirname(__file__))
     filepath = os.path.join(path, filename)
     try:
-        return open(filepath).read()
+        return open(filepath).read()  # noqa: SIM115
     except OSError:
-        return ''
+        return ""
 
 
 def get_readme():
     """Return the README file contents. Supports text,rst, and markdown"""
-    for name in ('README', 'README.rst', 'README.md'):
+    for name in ("README", "README.rst", "README.md"):
         if os.path.exists(name):
             return read_file(name)
-    return ''
+    return ""
 
 
 setup(
-    name='django-azure-ad-auth-redux',
-    version=__import__('azure_ad_auth').get_version().replace(' ', '-'),
-    url='https://github.com/lanshark/django-azure-ad-auth-redux',
-    author='Scott Sharkey',
-    author_email='ssharkey@lanshark.com',
-    description='Authenticated users using Azure Active Directory.',
+    name="django-azure-ad-auth-redux",
+    version=__import__("azure_ad_auth").get_version().replace(" ", "-"),
+    url="https://github.com/lanshark/django-azure-ad-auth-redux",
+    author="Scott Sharkey",
+    author_email="ssharkey@lanshark.com",
+    description="Authenticated users using Azure Active Directory.",
     long_description=get_readme(),
-    packages=find_packages(exclude=['tests']),
+    packages=find_packages(exclude=["tests"]),
     include_package_data=True,
-    install_requires=read_file('requirements.txt'),
+    install_requires=read_file("requirements.txt"),
     classifiers=[
-        'Environment :: Web Environment',
-        'License :: OSI Approved :: BSD License',
-        'Framework :: Django',
-        'Programming Language :: Python',
+        "Environment :: Web Environment",
+        "License :: OSI Approved :: BSD License",
+        "Framework :: Django",
+        "Programming Language :: Python",
     ],
 )

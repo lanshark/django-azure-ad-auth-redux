@@ -1,13 +1,14 @@
 import logging
+import requests
 from base64 import b64decode
-from cryptography.hazmat.backends import default_backend
-from cryptography.x509 import load_der_x509_certificate
 from urllib.parse import urlencode
 
-from django.conf import settings
 import jwt
+from cryptography.hazmat.backends import default_backend
+from cryptography.x509 import load_der_x509_certificate
+from django.conf import settings
 from lxml import etree
-import requests
+
 
 logger = logging.getLogger("azure_ad_auth")
 
@@ -15,8 +16,8 @@ AUTHORITY = getattr(settings, "AAD_AUTHORITY", "https://login.microsoftonline.co
 SCOPE = getattr(settings, "AAD_SCOPE", "openid")
 RESPONSE_TYPE = getattr(settings, "AAD_RESPONSE_TYPE", "id_token")
 RESPONSE_MODE = getattr(settings, "AAD_RESPONSE_MODE", "form_post")
-TENANT_ID = getattr(settings, "AAD_TENANT_ID")
-CLIENT_ID = getattr(settings, "AAD_CLIENT_ID")
+TENANT_ID = settings.AAD_TENANT_ID
+CLIENT_ID = settings.AAD_CLIENT_ID
 ALWAYS_AUTHENTICATE = getattr(settings, "AAD_ALWAYS_AUTHENTICATE", True)
 
 
@@ -29,7 +30,7 @@ def get_login_url(
     redirect_uri=None,
     nonce=None,
     state=None,
-    always_authenticate=ALWAYS_AUTHENTICATE
+    always_authenticate=ALWAYS_AUTHENTICATE,
 ):
     param_dict = {
         "response_type": response_type,
@@ -50,9 +51,11 @@ def get_login_url(
 
 
 def get_logout_url(redirect_uri, authority=AUTHORITY):
-    params = urlencode({
-        "post_logout_redirect_uri": redirect_uri,
-    })
+    params = urlencode(
+        {
+            "post_logout_redirect_uri": redirect_uri,
+        },
+    )
     return f"{authority}/common/oauth2/logout?{params}"
 
 
@@ -60,28 +63,29 @@ def get_federation_metadata_document_url(authority=AUTHORITY, tenant_id=TENANT_I
     return f"{authority}/{tenant_id}/federationmetadata/2007-06/federationmetadata.xml"
 
 
-def parse_x509_DER_list(federation_metadata_document):
-    document = etree.fromstring(federation_metadata_document)
+def parse_x509_der_list(federation_metadata_document):
+    document = etree.fromstring(federation_metadata_document)  # noqa: S320
     certificate_elems = document.findall(
-        ".//{http://www.w3.org/2000/09/xmldsig#}X509Certificate"
+        ".//{http://www.w3.org/2000/09/xmldsig#}X509Certificate",
     )
-    b64encoded_DERs = {certificate_elem.text for certificate_elem in certificate_elems}
-    return [b64decode(b64encoded_DER) for b64encoded_DER in b64encoded_DERs]
+    b64encoded_ders = {certificate_elem.text for certificate_elem in certificate_elems}
+    return [b64decode(b64encoded_der) for b64encoded_der in b64encoded_ders]
 
 
 def get_public_keys():
     try:
         federation_metadata_document_url = get_federation_metadata_document_url()
-        response = requests.get(federation_metadata_document_url)
+        response = requests.get(federation_metadata_document_url)  # noqa: S113
         if not response.ok:
             raise
         response.encoding = response.apparent_encoding
-        x509_DER_list = parse_x509_DER_list(response.text.encode("utf-8"))
+        x509_der_list = parse_x509_der_list(response.text.encode("utf-8"))
         keys = [
             load_der_x509_certificate(
-                x509_DER,
-                default_backend()
-            ).public_key() for x509_DER in x509_DER_list
+                x509_der,
+                default_backend(),
+            ).public_key()
+            for x509_der in x509_der_list
         ]
     except Exception:  # TODO - which ones exactly?
         keys = []
@@ -103,7 +107,7 @@ def get_token_payload(token=None, audience=CLIENT_ID, nonce=None):
 
             return payload
         except (jwt.InvalidTokenError, IndexError) as e:
-            logger.error(f"InvalidTokenError: {str(e)}")
+            logger.error(f"InvalidTokenError: {e!s}")
             pass
 
     return None

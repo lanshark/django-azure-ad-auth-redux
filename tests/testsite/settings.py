@@ -14,10 +14,11 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "o+%5imry6l=0c(tpmpgl(6y(j3_bsp7!lh7)$u7w+cgpw+dv@+"
+SECRET_KEY = "o+%5imry6l=0c(tpmpgl(6y(j3_bsp7!lh7)$u7w+cgpw+dv@+"  # noqa: S105
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -71,7 +72,7 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
-    }
+    },
 }
 
 LANGUAGE_CODE = "en-us"

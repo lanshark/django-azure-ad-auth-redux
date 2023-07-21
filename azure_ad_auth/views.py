@@ -1,5 +1,5 @@
-from urllib.parse import urlparse
 import uuid
+from urllib.parse import urlparse
 
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME, login
@@ -22,7 +22,7 @@ def auth(request):
     login_url = backend.login_url(
         redirect_uri=redirect_uri,
         nonce=nonce,
-        state=state
+        state=state,
     )
     return HttpResponseRedirect(login_url)
 
@@ -47,8 +47,6 @@ def complete(request):
 def get_login_success_url(request):
     redirect_to = request.GET.get(REDIRECT_FIELD_NAME, "")
     netloc = urlparse(redirect_to)[1]
-    if not redirect_to:
-        redirect_to = settings.LOGIN_REDIRECT_URL
-    elif netloc and netloc != request.get_host():
+    if not redirect_to or (netloc and netloc != request.get_host()):
         redirect_to = settings.LOGIN_REDIRECT_URL
     return redirect_to
