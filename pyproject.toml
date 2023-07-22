@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "django-azure-ad-auth-redux"
-version = "1.5.18"
+version = "1.5.20"
 description="Authenticate users using Azure Active Directory."
 authors = ["Scott Sharkey <scott.sharkey@rsginc.com>"]
 license = "MIT"
@@ -10,20 +10,21 @@ repository = "https://github.com/lanshark/django-azure-ad-auth-redux"
 homepage = "https://github.com/lanshark/django-azure-ad-auth-redux"
 keywords = [ "Python, Active Directory, Django", ]
 classifiers = [
-        "Development Status :: 4 - Beta",
-        "Intended Audience :: Developers",
-        "Natural Language :: English",
-        "License :: OSI Approved :: BSD License",
+        "Development Status :: 5 - Production/Stable",
         "Environment :: Web Environment",
         "Framework :: Django",
+        "Framework :: Django :: 3.2",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: BSD License",
+        "Natural Language :: English",
         "Operating System :: OS Independent",
         "Operating System :: POSIX",
         "Operating System :: Unix",
-        "Topic :: Software Development",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
+        "Topic :: Software Development",
 ]
 include = [
     "LICENSE",
