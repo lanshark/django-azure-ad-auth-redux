@@ -93,13 +93,15 @@ def get_public_keys():
 
 
 def get_token_payload(token=None, audience=CLIENT_ID, nonce=None):
+    headers = jwt.get_unverified_header(token)
+    algorithm = headers.get("alg", "RS256")
     for key in get_public_keys():
         try:
             payload = jwt.decode(
                 token,
                 key=key,
                 audience=audience,
-                algorithms=["HS256", "RS256"],
+                algorithms=[algorithm],
             )
 
             if payload["nonce"] != nonce:
