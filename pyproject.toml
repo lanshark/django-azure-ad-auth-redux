@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "django-azure-ad-auth-redux"
-version = "1.5.24"
+version = "1.5.25"
 description="Authenticate users using Azure Active Directory."
 authors = ["Scott Sharkey <scott.sharkey@rsginc.com>"]
 license = "MIT"
@@ -32,7 +32,7 @@ include = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.13"
+python = ">=3.10,<4"
 pyjwt = "^2.8.0"
 cryptography = "^41.0.2"
 lxml = "^4.9.3"
