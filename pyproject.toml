@@ -1,6 +1,6 @@
 [project]
 name = "django-azure-ad-auth-redux"
-version = "1.5.25"
+version = "1.5.26"
 description="Authenticate users using Azure Active Directory."
 authors = [
     { name="Scott Sharkey", email="scott.sharkey@rsginc.com" },
@@ -25,6 +25,7 @@ classifiers = [
         "Operating System :: Unix",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
         "Topic :: Software Development",
 ]
