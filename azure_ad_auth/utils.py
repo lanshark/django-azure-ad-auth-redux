@@ -9,8 +9,8 @@ from cryptography.x509 import load_der_x509_certificate
 from django.conf import settings
 from lxml import etree
 
-
 logger = logging.getLogger("azure_ad_auth")
+
 
 AUTHORITY = getattr(settings, "AAD_AUTHORITY", "https://login.microsoftonline.com")
 SCOPE = getattr(settings, "AAD_SCOPE", "openid")

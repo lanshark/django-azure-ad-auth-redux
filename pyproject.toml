@@ -1,12 +1,15 @@
-[tool.poetry]
+[project]
 name = "django-azure-ad-auth-redux"
 version = "1.5.25"
 description="Authenticate users using Azure Active Directory."
-authors = ["Scott Sharkey <scott.sharkey@rsginc.com>"]
+authors = [
+    { name="Scott Sharkey", email="scott.sharkey@rsginc.com" },
+]
 license = "MIT"
-packages = [{include = "azure_ad_auth"}]
+#packages = [{include = "azure_ad_auth"}]
 readme = "README.md"
 repository = "https://github.com/lanshark/django-azure-ad-auth-redux"
+requires-python = ">=3.12,<4"
 homepage = "https://github.com/lanshark/django-azure-ad-auth-redux"
 keywords = [ "Python, Active Directory, Django", ]
 classifiers = [
@@ -22,8 +25,6 @@ classifiers = [
         "Operating System :: Unix",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.10",
-        "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
         "Topic :: Software Development",
 ]
@@ -31,22 +32,58 @@ include = [
     "LICENSE",
 ]
 
-[tool.poetry.dependencies]
-python = ">=3.10,<4"
-pyjwt = "^2.8.0"
-cryptography = "^41.0.2"
-lxml = "^4.9.3"
-requests = "^2.31.0"
+dependencies = [
+    "cryptography>=44.0.2",
+    "lxml>=5.0.1",
+    "pyjwt>=2.10.1",
+    "requests>=2.32.3",
+]
 
-[tool.poetry.group.lint.dependencies]
-pre-commit = "^3.0.2"
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
-[tool.poetry.group.dev.dependencies]
-poetry = "^1.8.2"
-icecream = "^2.1.3"
-mock = "^5.0.1"
-pylint = "^2.15.10"
-pylint-django = "^2.5.3"
+[dependency-groups]
+lint = [
+    "pre-commit>=3.7.1",
+]
+dev = [
+    "icecream>=2.1.4",
+    "mock>=5.2.0",
+    "pylint>=3.3.5",
+    "pylint-django>=2.6.1",
+]
+
+[tool.black]
+line-length = 88
+force_exclude = '''
+'''
+
+[tool.django-stubs]
+django_settings_module = "conf.settings"
+
+[tool.hatch.build.targets.sdist]
+include = ["azure_ad_auth"]
+
+[tool.hatch.build.targets.wheel]
+include = ["azure_ad_auth"]
+
+[tool.isort]
+profile = "black"
+extra_standard_library = ["requests"]
+force-single-line = false
+include_trailing_comma = true
+lines_after_imports = 2
+line_length = 88
+multi_line_output = 3
+use_parenthesis = true
+known-first-party = [
+    "azure_ad_auth",
+]
+
+[tool.mypy]
+python_version = "3.12"
+plugins = "mypy_django_plugin.main"
 
 [tool.ruff]
 show-fixes = true
@@ -59,6 +96,12 @@ exclude = [
     ".ruff_cache",
     "__pypackages__",
 ]
+fix = true
+line-length = 88
+target-version = "py312"
+
+[tool.ruff.lint]
+task-tags = ["NOTE", "TODO", "FIXME"]
 select = [
     "A",
     "ARG",
@@ -140,10 +183,6 @@ ignore = [
     "TCH003",   # Move standard library import into a type-checking block
     "TRY",      # TODO: temporary - try/catch block linter
 ]
-fix = true
-line-length = 88
-target-version = "py310"
-task-tags = ["NOTE", "TODO", "FIXME"]
 
 [tool.ruff.flake8-annotations]
 allow-star-arg-any = true
@@ -156,7 +195,7 @@ ignore-variadic-names = true
 [tool.ruff.per-file-ignores]
 "conf/settings.py" = ["ERA001"]  # Found commented-out code
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 force-single-line = false
 known-first-party = [
     "azure_ad_auth",
@@ -166,30 +205,11 @@ lines-after-imports = 2
 [tool.ruff.pydocstyle]
 convention = "google"
 
-[tool.black]
-line-length = 88
-force_exclude = '''
-'''
-
-[tool.isort]
-profile = "black"
-line_length = 88
-lines_after_imports = 2
-include_trailing_comma = true
-use_parentheses = true
-multi_line_output = 3
-extra_standard_library = ["requests"]
-known_first_party = [
-    "azure_ad_auth",
+[tool.uv]
+default-groups = [
+    "dev",
+    "lint",
+    "test",
 ]
 
-[tool.mypy]
-python_version = "3.10"
-plugins = "mypy_django_plugin.main"
-
-[tool.django-stubs]
-django_settings_module = "conf.settings"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[tool.uv.sources]
