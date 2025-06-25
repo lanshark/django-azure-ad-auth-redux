@@ -18,7 +18,7 @@ jobs:
 
       - name: Install uv and setup Python
         uses: astral-sh/setup-uv@v6.3.1
-          with:
+        with:
             enable-cache: true
 
       - name: Install the project
