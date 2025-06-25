@@ -1,5 +1,6 @@
 from base64 import urlsafe_b64encode
 from hashlib import sha1
+import logging
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -13,6 +14,8 @@ from .utils import (
     get_token_payload,
     get_token_payload_email,
 )
+
+logger = logging.getLogger("azure_ad_auth")
 
 
 class AzureActiveDirectoryBackend:
@@ -47,12 +50,14 @@ class AzureActiveDirectoryBackend:
         **kwargs,
     ):
         if token is None:
+            logger.debug("authenticate: token is None")
             return None
 
         payload = get_token_payload(token=token, nonce=nonce)
         email = get_token_payload_email(payload)
 
         if email is None:
+            logger.debug("authenticate: email is None")
             return None
 
         email = email.lower()
@@ -62,15 +67,18 @@ class AzureActiveDirectoryBackend:
         users = self.User.objects.filter(email=email)
         if len(users) == 0 and self.USER_CREATION:
             user = self.create_user(new_user, payload)
+            logger.debug(f"authenticate: users is 0, creating {user}")
 
             # Try mapping group claims to matching groups
             self.add_user_to_group(user, payload)
         elif len(users) == 1:
             user = users[0]
+            logger.debug(f"authenticate: users is {user}")
 
             # Try mapping group claims to matching groups
             self.add_user_to_group(user, payload)
         else:
+            logger.debug("authenticate: users is not 0 or 1")
             return None
 
         user.backend = f"{self.__class__.__module__}.{self.__class__.__name__}"
