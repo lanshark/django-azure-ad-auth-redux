@@ -210,7 +210,6 @@ convention = "google"
 default-groups = [
     "dev",
     "lint",
-    "test",
 ]
 
 [tool.uv.sources]
